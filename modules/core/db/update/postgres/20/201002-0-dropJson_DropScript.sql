@@ -1,0 +1,1 @@
+drop table if exists GENPRO_JSON__U83612 cascade ;
