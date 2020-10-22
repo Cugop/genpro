@@ -4,15 +4,13 @@ import com.company.genpro.web.forms.JForm;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.*;
 import com.company.genpro.entity.Doc;
 import com.haulmont.cuba.gui.screen.LookupComponent;
-import com.haulmont.cuba.web.gui.components.WebForm;
-import com.haulmont.cuba.web.gui.components.WebTabSheet;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -23,7 +21,7 @@ import java.util.*;
 @LoadDataBeforeShow
 public class DocBrowse extends MasterDetailScreen<Doc> {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(DocBrowse.class);
+    private static final Logger log = LoggerFactory.getLogger(DocBrowse.class);
     @Inject
     private Form form;
 
@@ -32,6 +30,8 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
 
     @Inject
     private InstanceContainer<Doc> docDc;
+    @Inject
+    private CollectionLoader<Doc> docsDl;
 
     @Inject
     private Button button;
@@ -44,10 +44,10 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
     @Subscribe("table")
     public void onTableSelection(Table.SelectionEvent<Doc> event) {
         String jsonBody = event.getSelected().iterator().next().getDocJ();
+        log.info(jsonBody);
         jForm.loadJson(jsonBody);
-//        JForm jForm = new JForm(jsonBody,uiComponents);
-//        jForm.createForm(form);
     }
+
     @Subscribe
     public void onAfterInit(AfterInitEvent event) {
         jForm = new JForm(form, uiComponents, button);
@@ -56,16 +56,13 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
     @Subscribe("saveBtn")
     public void onSaveBtnClick(Button.ClickEvent event) {
         enableEditControls(true);
-        WebForm webForm = (WebForm) form.getComponent("formTab1");
-        assert webForm != null;
-        Collection<Component> components = webForm.getComponents(0);
-        String json = JForm.createJSONObjectFromComponents(components).toString();
-        log.info(json);
+        String json = jForm.saveStates();
         Doc doc = docDc.getItem();
-        doc.setJsonBody(json);
-        //doc.setDocJ(json);
+        // doc.setJsonBody(json);
+        doc.setDocJ(json);
         dataManager.commit(doc);
         getEditedEntity().setDocJ(json);
+        docsDl.load();
     }
 
     @Subscribe("button")
@@ -75,32 +72,3 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
     }
 
 }
-
-//public class DocBrowse extends MasterDetailScreen<Doc> {
-//
-//    @Inject
-//    private Form form;
-//    @Inject
-//    private UiComponents uiComponents;
-//
-//
-//    private JForm jForm;
-//
-//    @Subscribe("table")
-//    public void onTableSelection(Table.SelectionEvent<Doc> event) {
-//        String jsonBody = event.getSelected().iterator().next().getJsonBody();
-//        jForm.loadJson(jsonBody);
-//    }
-//
-//    @Subscribe
-//    public void onAfterInit(AfterInitEvent event) {
-//        jForm = new JForm(form, uiComponents, button);
-//    }
-//
-//    @Subscribe("button")
-//    public void onTableSelection(Button.ClickEvent event) {
-//        jForm.reloadJson();
-//        System.out.println();
-//    }
-//
-//}

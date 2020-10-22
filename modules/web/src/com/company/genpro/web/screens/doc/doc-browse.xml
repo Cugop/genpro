@@ -41,7 +41,8 @@
                     </actions>
                     <columns>
                         <column id="name"/>
-                        <column id="jsonBody"/>
+                        <!--<column id="jsonBody"/>-->
+                        <!--<column id="docJ"/>-->
                     </columns>
                     <rowsCount/>
                     <buttonsPanel id="buttonsPanel"

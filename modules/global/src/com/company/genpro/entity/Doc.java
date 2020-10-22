@@ -17,7 +17,6 @@ import javax.persistence.Table;
 @Data
 public class Doc extends StandardEntity {
     private static final long serialVersionUID = 8620314949152327121L;
-
     @Column(name = "NAME")
     private String name;
 
@@ -32,5 +31,4 @@ public class Doc extends StandardEntity {
     public void setDocJ(String j){
         docJ = (String) SignType.SIGN_TYPE_JSON.convert(j);
     }
-
 }
