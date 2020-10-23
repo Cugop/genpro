@@ -1,0 +1,84 @@
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://countryBrowse.caption"
+        focusComponent="table"
+        messagesPack="com.company.genpro.web.screens.country">
+    <data>
+        <collection id="countriesDc"
+                    class="com.company.genpro.entity.Country">
+            <view extends="_local"/>
+            <loader id="countriesDl">
+                <query>
+                    <![CDATA[select e from Country e]]>
+                </query>
+            </loader>
+        </collection>
+        <instance id="countryDc"
+                  class="com.company.genpro.entity.Country">
+            <view extends="_local"/>
+            <loader/>
+        </instance>
+    </data>
+    <actions>
+        <action id="save" icon="icons/ok.png" caption="mainMsg://actions.Ok" shortcut="CTRL-ENTER"/>
+        <action id="cancel" icon="icons/cancel.png" caption="mainMsg://actions.Cancel" description="Esc"/>
+    </actions>
+    <dialogMode height="600" width="800"/>
+    <layout>
+        <split id="split" height="100%" orientation="horizontal" reversePosition="true" width="100%">
+            <vbox id="lookupBox" expand="table" height="100%" margin="false,true,false,false" spacing="true">
+                <filter id="filter" applyTo="table" dataLoader="countriesDl">
+                    <properties include=".*"/>
+                </filter>
+                <groupTable id="table"
+                            width="100%"
+                            dataContainer="countriesDc">
+                    <actions>
+                        <action id="create" type="create"/>
+                        <action id="edit" type="edit"/>
+                        <action id="remove" type="remove"/>
+                    </actions>
+                    <columns>
+                        <column id="name"/>
+                        <column id="nameIm"/>
+                        <column id="nameRod"/>
+                        <column id="codeNumeric"/>
+                        <column id="code2LetterRU"/>
+                        <column id="code2LetterEN"/>
+                        <column id="code3LetterEN"/>
+                    </columns>
+                    <rowsCount/>
+                    <buttonsPanel id="buttonsPanel"
+                                  alwaysVisible="true">
+                        <button id="createBtn" action="table.create"/>
+                        <button id="editBtn" action="table.edit"/>
+                        <button id="removeBtn" action="table.remove"/>
+                    </buttonsPanel>
+                </groupTable>
+                <hbox id="lookupActions" spacing="true" visible="false">
+                    <button action="lookupSelectAction"/>
+                    <button action="lookupCancelAction"/>
+                </hbox>
+            </vbox>
+            <vbox id="editBox" height="100%" margin="false,false,false,true" expand="fieldGroupBox" spacing="true">
+                <scrollBox id="fieldGroupBox">
+                    <form id="form" dataContainer="countryDc">
+                        <column width="350px">
+                            <textField id="nameField" property="name"/>
+                            <textField id="nameImField" property="nameIm"/>
+                            <textField id="nameRodField" property="nameRod"/>
+                            <textField id="codeNumericField" property="codeNumeric"/>
+                            <textField id="code2LetterRUField" property="code2LetterRU"/>
+                            <textField id="code2LetterENField" property="code2LetterEN"/>
+                            <textField id="code3LetterENField" property="code3LetterEN"/>
+                        </column>
+                    </form>
+                </scrollBox>
+                <hbox id="actionsPane" spacing="true" visible="false">
+                    <button id="saveBtn" action="save"/>
+                    <button id="cancelBtn" action="cancel"/>
+                </hbox>
+            </vbox>
+        </split>
+    </layout>
+</window>
