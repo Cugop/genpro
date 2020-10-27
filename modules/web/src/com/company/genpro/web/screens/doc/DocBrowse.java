@@ -1,9 +1,11 @@
 package com.company.genpro.web.screens.doc;
 
+import com.company.genpro.entity.Country;
 import com.company.genpro.web.forms.JForm;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.*;
@@ -25,6 +27,11 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
     @Inject
     private Form form;
 
+    @Inject
+    private CollectionContainer<Country> countryDc;
+
+    @Inject
+    private CollectionLoader<Country> countryDl;
     @Inject
     UiComponents uiComponents;
 
@@ -50,7 +57,7 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
 
     @Subscribe
     public void onAfterInit(AfterInitEvent event) {
-        jForm = new JForm(form, uiComponents, button);
+        jForm = new JForm(form, uiComponents, button, countryDc, countryDl);
     }
 
     @Subscribe("saveBtn")

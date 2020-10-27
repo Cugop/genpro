@@ -1,5 +1,8 @@
 package com.company.genpro.web.forms;
 
+import com.company.genpro.entity.Country;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
+import com.haulmont.cuba.gui.model.*;
 import lombok.extern.slf4j.Slf4j;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
@@ -7,13 +10,20 @@ import com.haulmont.cuba.web.gui.components.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 public class JForm {
+
+//        @Inject
+//        private DataComponents dataComponents;
+//    @Inject
+//    private DataContext dataContext;
 
     private JSONObject jsonObject;
     private final UiComponents uiComponents;
@@ -27,7 +37,13 @@ public class JForm {
     private Component component;
     private Form form;
 
-    public JForm(Form form, UiComponents uiComponents, Button button) {
+
+    private CollectionContainer<Country> countryDc;
+    private CollectionLoader<Country> countryDl;
+
+    public JForm(Form form, UiComponents uiComponents, Button button, CollectionContainer<Country> countryDc,CollectionLoader<Country> countryDl ) {
+        this.countryDc=countryDc;
+        this.countryDl=countryDl;
         this.uiComponents = uiComponents;
         this.form = form;
         this.form.add(tabSheet);
@@ -70,12 +86,54 @@ public class JForm {
             component = uiComponents.create(uiClass);
             // found and get value
             Object value = null;
+            String complexValue = null;
             if (jsonObject.has("value")) {
-                value = jsonObject.get("value");
+                // value = jsonObject.get("value");
+                if (uiClass.equals("pickerField")) {
+                    complexValue = (String) jsonObject.get("value");
+                    // ((PickerField)component).set
+                    // ((PickerField)component).setCaptionProperty("country");
+                    ((PickerField)component).setValueSource(new ContainerValueSource<>(countryDc, "country"));
+                } else {
+                    value = jsonObject.get("value");
+                }
             }
             // filling component
             if (component instanceof HasValue) {
-                ((HasValue) component).setValue(value);
+                if (!uiClass.equals("pickerField")) {
+                    ((HasValue) component).setValue(value);
+                } else if (uiClass.equals("pickerField")) {
+                    //String[] values = complexValue.split("|");
+                    String[] values = complexValue.split("&");
+                    for (String v : values)
+                        log.info(v);
+                    // DataComponents dataComponents = beanLocator.get(DataComponents.class);
+//                    DataComponents dataComponents = new DataComponents();
+//                    DataContext dataContext = dataComponents.createDataContext();
+//
+//                    countryDc = dataComponents.createCollectionContainer(Country.class);
+//                    countryDl = dataComponents.createCollectionLoader();
+//                    countryDl.setContainer(countryDc);
+//                    countryDl.setDataContext(dataContext);
+                    // countryDl.setView("order-edit");
+                    countryDl.load();
+
+//                    List<Country> countryList = countryDc.getItems();
+//                    UUID uuidCountry0 = countryList.get(0).getId();
+//
+//                    log.info(uuidCountry0.toString());
+//
+//                    UUID uuid = UUID.fromString(values[1]);
+//                    log.info(uuid.toString());
+//
+//
+//                    Country country = countryDc.getItemOrNull(values[1]);
+//                    log.info(country.toString());
+//                    assert country != null;
+//                    log.info(country.toString());
+                    ((HasValue) component).setValue(countryDc.getItemOrNull(UUID.fromString(values[1])));
+
+                }
 //                ((HasValue) component).addValueChangeListener(new Consumer<HasValue.ValueChangeEvent>() {
 //                    @Override
 //                    public void accept(HasValue.ValueChangeEvent valueChangeEvent) {
@@ -95,6 +153,11 @@ public class JForm {
             formTab1.add(component);
         }
         jsonText.setValue(jsonObject.toString());
+
+//        PickerField<Country> pickerField = null;
+//        Country country = pickerField.getValue();
+//        pickerField.getValueSource();
+
     }
 
     public void reloadJson() {

@@ -1,29 +1,39 @@
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
-        caption="msg://docBrowse.caption"
+        caption="msg://entityForChechWorkJSONObjectBrowse.caption"
         focusComponent="table"
-        messagesPack="com.company.genpro.web.screens.doc">
+        messagesPack="com.company.genpro.web.screens.entityforchechworkjsonobject">
     <data>
-        <collection id="docsDc"
-                    class="com.company.genpro.entity.Doc">
-            <view extends="_local"/>
-            <loader id="docsDl">
+        <collection id="entityForChechWorkJSONObjectsDc"
+                    class="com.company.genpro.entity.EntityForChechWorkJSONObject">
+            <view extends="_local">
+                <property name="country" view="_minimal">
+                    <property name="nameIm"/>
+                    <property name="nameRod"/>
+                    <property name="codeNumeric"/>
+                    <property name="code2LetterRU"/>
+                    <property name="code2LetterEN"/>
+                    <property name="code3LetterEN"/>
+                </property>
+            </view>
+            <loader id="entityForChechWorkJSONObjectsDl">
                 <query>
-                    <![CDATA[select e from genpro_Doc e]]>
+                    <![CDATA[select e from genpro_EntityForChechWorkJSONObject e]]>
                 </query>
             </loader>
         </collection>
-        <collection id="countryDc" class="com.company.genpro.entity.Country">
-            <view extends="_local"/>
-            <loader id="countryDl">
-                <query>
-                    <![CDATA[select e from Country e]]>
-                </query>
-            </loader>
-        </collection>
-        <instance id="docDc"
-                  class="com.company.genpro.entity.Doc">
-            <view extends="_local"/>
+        <instance id="entityForChechWorkJSONObjectDc"
+                  class="com.company.genpro.entity.EntityForChechWorkJSONObject">
+            <view extends="_local">
+                <property name="country" view="_minimal">
+                    <property name="nameIm"/>
+                    <property name="nameRod"/>
+                    <property name="codeNumeric"/>
+                    <property name="code2LetterRU"/>
+                    <property name="code2LetterEN"/>
+                    <property name="code3LetterEN"/>
+                </property>
+            </view>
             <loader/>
         </instance>
     </data>
@@ -35,22 +45,20 @@
     <layout>
         <split id="split" height="100%" orientation="horizontal" reversePosition="true" width="100%">
             <vbox id="lookupBox" expand="table" height="100%" margin="false,true,false,false" spacing="true">
-                <filter id="filter" applyTo="table" dataLoader="docsDl">
+                <filter id="filter" applyTo="table" dataLoader="entityForChechWorkJSONObjectsDl">
                     <properties include=".*"/>
                 </filter>
                 <groupTable id="table"
                             width="100%"
-                            dataContainer="docsDc" >
+                            dataContainer="entityForChechWorkJSONObjectsDc">
                     <actions>
                         <action id="create" type="create"/>
                         <action id="edit" type="edit"/>
                         <action id="remove" type="remove"/>
-                        <action id="add" type="add"/>
                     </actions>
                     <columns>
                         <column id="name"/>
-                        <!--<column id="jsonBody"/>-->
-                        <!--<column id="docJ"/>-->
+                        <column id="country"/>
                     </columns>
                     <rowsCount/>
                     <buttonsPanel id="buttonsPanel"
@@ -58,7 +66,6 @@
                         <button id="createBtn" action="table.create"/>
                         <button id="editBtn" action="table.edit"/>
                         <button id="removeBtn" action="table.remove"/>
-                        <button id="addBtn" action="table.add"/>
                     </buttonsPanel>
                 </groupTable>
                 <hbox id="lookupActions" spacing="true" visible="false">
@@ -68,9 +75,15 @@
             </vbox>
             <vbox id="editBox" height="100%" margin="false,false,false,true" expand="fieldGroupBox" spacing="true">
                 <scrollBox id="fieldGroupBox">
-                    <form id="form" dataContainer="docDc" width="100%">
-                        <column width="100%" childrenCaptionWidth="AUTO">
-                            <textField id="nameField" property="name" width="100%"/>
+                    <form id="form" dataContainer="entityForChechWorkJSONObjectDc">
+                        <column width="350px">
+                            <textField id="nameField" property="name"/>
+                            <pickerField id="countryField" property="country">
+                                <actions>
+                                    <action id="lookup" type="picker_lookup"/>
+                                    <action id="clear" type="picker_clear"/>
+                                </actions>
+                            </pickerField>
                         </column>
                     </form>
                 </scrollBox>
@@ -78,7 +91,6 @@
                     <button id="saveBtn" action="save"/>
                     <button id="cancelBtn" action="cancel"/>
                 </hbox>
-                <button id="button" caption="TEST" visible="true"/>
             </vbox>
         </split>
     </layout>

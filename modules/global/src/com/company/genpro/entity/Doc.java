@@ -4,12 +4,12 @@ import com.company.genpro.types.json.SignType;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Lookup;
+import com.haulmont.cuba.core.entity.annotation.LookupType;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Table(name = "GENPRO_DOC")
 @Entity(name = "genpro_Doc")
@@ -27,6 +27,15 @@ public class Doc extends StandardEntity {
     @MetaProperty(datatype = "json_orm")
     @Column(name = "doc_j")
     protected String docJ;
+
+    /**
+     * Гражданство
+     */
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "citizenship_id")
+    protected Country country;
+
 
     public void setDocJ(String j){
         docJ = (String) SignType.SIGN_TYPE_JSON.convert(j);

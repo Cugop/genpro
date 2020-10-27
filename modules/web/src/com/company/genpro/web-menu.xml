@@ -2,5 +2,8 @@
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
     <menu id="application-genpro" insertBefore="administration" caption="mainMsg://menu_config.application-genpro">
         <item screen="genpro_Doc.browse" caption="mainMsg://menu_config.genpro_Doc.browse"/>
+        <item screen="Country.browse" caption="mainMsg://menu_config.Country.browse"/>
+        <item screen="genpro_EntityForChechWorkJSONObject.browse"
+              caption="mainMsg://menu_config.genpro_EntityForChechWorkJSONObject.browse"/>
     </menu>
 </menu-config>

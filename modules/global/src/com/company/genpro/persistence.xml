@@ -3,5 +3,7 @@
     <persistence-unit name="genpro" transaction-type="RESOURCE_LOCAL">
 
         <class>com.company.genpro.entity.Doc</class>
+        <class>com.company.genpro.entity.Country</class>
+        <class>com.company.genpro.entity.EntityForChechWorkJSONObject</class>
     </persistence-unit>
 </persistence>
