@@ -74,6 +74,7 @@ configure(globalModule) {
             runtime('javax.xml.bind:jaxb-api:2.3.1')
             runtime('org.glassfish.jaxb:jaxb-runtime:2.3.1')
         }
+        compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     }
 
     entitiesEnhancing {

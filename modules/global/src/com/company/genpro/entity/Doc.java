@@ -28,13 +28,13 @@ public class Doc extends StandardEntity {
     @Column(name = "doc_j")
     protected String docJ;
 
-    /**
-     * Гражданство
-     */
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "citizenship_id")
-    protected Country country;
+//    /**
+//     * Гражданство
+//     */
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "citizenship_id")
+//    protected Country country;
 
 
     public void setDocJ(String j){

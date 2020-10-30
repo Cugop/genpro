@@ -1,6 +1,15 @@
 package com.company.genpro.web.forms;
 
 import com.company.genpro.entity.Country;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.Metadata;
+//import com.haulmont.cuba.gui.actions.picker.OpenAction;
+import com.haulmont.cuba.gui.actions.picker.ClearAction;
+import com.haulmont.cuba.gui.actions.picker.LookupAction;
+import com.haulmont.cuba.gui.actions.picker.OpenAction;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.*;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +29,11 @@ import java.util.UUID;
 @Slf4j
 public class JForm {
 
-//        @Inject
-//        private DataComponents dataComponents;
-//    @Inject
-//    private DataContext dataContext;
-
     private JSONObject jsonObject;
     private final UiComponents uiComponents;
+
+//    private final DataComponents dataComponents;
+
     private final TabSheet tabSheet = new WebTabSheet();
     private final Form formTab1 = new WebForm();
     private final Form formTab2 = new WebForm();
@@ -41,10 +48,13 @@ public class JForm {
     private CollectionContainer<Country> countryDc;
     private CollectionLoader<Country> countryDl;
 
-    public JForm(Form form, UiComponents uiComponents, Button button, CollectionContainer<Country> countryDc,CollectionLoader<Country> countryDl ) {
-        this.countryDc=countryDc;
-        this.countryDl=countryDl;
+    // public JForm(Form form, UiComponents uiComponents, Button button, CollectionContainer<Country> countryDc,CollectionLoader<Country> countryDl ) {
+    public JForm(Form form, UiComponents uiComponents, Button button) {
+//        this.countryDc=countryDc;
+//        this.countryDl=countryDl;
+//        this.dataComponents = AppBeans.get(DataComponents.class);
         this.uiComponents = uiComponents;
+
         this.form = form;
         this.form.add(tabSheet);
         tabSheet.addTab("Поля", formTab1);
@@ -66,8 +76,8 @@ public class JForm {
         {"type": "jsonb", "components": [{"value": false, "caption": "check", "uiClass": "checkBox"}, {"value": "Название", "caption": "label", "uiClass": "label"}, {"caption": "кнопка", "uiClass": "button"}, {"caption": "combo", "uiClass": "lookupField"}]}
         {"type": "jsonb", "components": [{"value": true, "caption": "check", "uiClass": "checkBox"}, {"value": "Название", "caption": "label", "uiClass": "label"}]}
         {"type": "jsonb", "components": [{"value": true, "caption": "check", "uiClass": "checkBox"}, {"value": "Hello! Hello! Hello! Hello! Hello!", "caption": "Text", "uiClass": "textField"}]}
-        "uiClass": "textField"
-    * */
+        {"type": "jsonb", "components": [{"value": "Country&d1600cf6-b7fb-44d5-abb4-3a3188f68fd7", "uiClass": "pickerField"}]}
+    */
 
     @SuppressWarnings("unchecked")
     public void loadJson(String jsonStr) {
@@ -93,7 +103,7 @@ public class JForm {
                     complexValue = (String) jsonObject.get("value");
                     // ((PickerField)component).set
                     // ((PickerField)component).setCaptionProperty("country");
-                    ((PickerField)component).setValueSource(new ContainerValueSource<>(countryDc, "country"));
+                    //((PickerField)component).setValueSource(new ContainerValueSource<>(countryDc, "country"));
                 } else {
                     value = jsonObject.get("value");
                 }
@@ -104,19 +114,49 @@ public class JForm {
                     ((HasValue) component).setValue(value);
                 } else if (uiClass.equals("pickerField")) {
                     //String[] values = complexValue.split("|");
+                    assert complexValue != null;
                     String[] values = complexValue.split("&");
+                    MetaClass metaEntityClass = AppBeans.get(Metadata.class).getClassNN(values[0]);
+                    Entity entity = AppBeans.get(DataManager.class).load(metaEntityClass.getJavaClass()).id(UUID.fromString(values[1])).one();
+                    PickerField pickerField = (PickerField)component;
+                    pickerField.setMetaClass(metaEntityClass);
+                    pickerField.setValue(entity);
+                    // It does not work
+                    Actions actions = AppBeans.get(Actions.class);
+                    Action openAction = actions.create(OpenAction.class);
+                    pickerField.addAction(openAction);
+                    // It works
+                    Action lookupAction =  actions.create(LookupAction.class);
+                    pickerField.addAction(lookupAction);
+                    Action clearAction =  actions.create(ClearAction.class);
+                    pickerField.addAction(clearAction);
                     for (String v : values)
                         log.info(v);
-                    // DataComponents dataComponents = beanLocator.get(DataComponents.class);
-//                    DataComponents dataComponents = new DataComponents();
+
 //                    DataContext dataContext = dataComponents.createDataContext();
-//
 //                    countryDc = dataComponents.createCollectionContainer(Country.class);
 //                    countryDl = dataComponents.createCollectionLoader();
 //                    countryDl.setContainer(countryDc);
 //                    countryDl.setDataContext(dataContext);
+//                    countryDl.load();
+
+
+/*
+                    // DataComponents dataComponents = beanLocator.get(DataComponents.class);
+//                    DataComponents dataComponents = new DataComponents();
+                    DataContext dataContext = dataComponents.createDataContext();
+                    //LookupPickerField pickerField = (LookupPickerField )component
+
+
+//                    DataContext dataContext = dataComponents.createDataContext();
+//
+                    countryDc = dataComponents.createCollectionContainer(Country.class);
+                    countryDl = dataComponents.createCollectionLoader();
+                    countryDl.setContainer(countryDc);
+                    countryDl.setDataContext(dataContext);
                     // countryDl.setView("order-edit");
                     countryDl.load();
+*/
 
 //                    List<Country> countryList = countryDc.getItems();
 //                    UUID uuidCountry0 = countryList.get(0).getId();
@@ -131,7 +171,7 @@ public class JForm {
 //                    log.info(country.toString());
 //                    assert country != null;
 //                    log.info(country.toString());
-                    ((HasValue) component).setValue(countryDc.getItemOrNull(UUID.fromString(values[1])));
+                    // ((HasValue) component).setValue(countryDc.getItemOrNull(UUID.fromString(values[1])));
 
                 }
 //                ((HasValue) component).addValueChangeListener(new Consumer<HasValue.ValueChangeEvent>() {

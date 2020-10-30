@@ -60,7 +60,6 @@ public enum SignType {
     };
 
     public final String TYPE = "type";
-
     public final String STRING_JSON_TYPE = "jsonb";
     public final String SIGN_STRING_JSON_TYPE = String.format("\"%s\":\"%s\"", TYPE, STRING_JSON_TYPE);
 
