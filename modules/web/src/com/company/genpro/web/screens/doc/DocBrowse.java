@@ -57,7 +57,8 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
 
     @Subscribe
     public void onAfterInit(AfterInitEvent event) {
-        jForm = new JForm(form, uiComponents, button, countryDc, countryDl);
+        // jForm = new JForm(form, uiComponents, button, countryDc, countryDl);
+        jForm = new JForm(form, uiComponents, button);
     }
 
     @Subscribe("saveBtn")
