@@ -40,8 +40,8 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
     @Inject
     private CollectionLoader<Doc> docsDl;
 
-    @Inject
-    private Button button;
+//    @Inject
+//    private Button button;
 
     @Inject
     DataManager dataManager;
@@ -58,7 +58,8 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
     @Subscribe
     public void onAfterInit(AfterInitEvent event) {
         // jForm = new JForm(form, uiComponents, button, countryDc, countryDl);
-        jForm = new JForm(form, uiComponents, button);
+        // jForm = new JForm(form, uiComponents, button);
+        jForm = new JForm(form, uiComponents);
     }
 
     @Subscribe("saveBtn")
@@ -73,10 +74,10 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
         docsDl.load();
     }
 
-    @Subscribe("button")
-    public void onTableSelection(Button.ClickEvent event) {
-        jForm.reloadJson();
-        log.info("button reaction");
-    }
+//    @Subscribe("button")
+//    public void onTableSelection(Button.ClickEvent event) {
+//        jForm.reloadJson();
+//        log.info("button reaction");
+//    }
 
 }

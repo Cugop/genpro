@@ -15,10 +15,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
+import java.util.Date;
 
 @Slf4j
 public class JForm {
@@ -45,12 +51,25 @@ public class JForm {
         tabSheet.addTab("JSON", formTab2);
         formTab2.add(boxLayout);
         // webButton.setId("button");
-        button.setParent(boxLayout);
-        button.setVisible(true);
-        boxLayout.add(button);
+        // button.setParent(boxLayout);
+        // button.setVisible(true);
+        // boxLayout.add(button);
         boxLayout.add(jsonText);
         jsonText.setSizeFull();
     }
+
+    public JForm(Form form, UiComponents uiComponents) {
+        this.uiComponents = uiComponents;
+
+        this.form = form;
+        this.form.add(tabSheet);
+        tabSheet.addTab("Поля", formTab1);
+        tabSheet.addTab("JSON", formTab2);
+        formTab2.add(boxLayout);
+        boxLayout.add(jsonText);
+        jsonText.setSizeFull();
+    }
+
 
     private void clearForm() {
         formTab1.removeAll();
@@ -61,7 +80,8 @@ public class JForm {
         {"type": "jsonb", "components": [{"value": false, "caption": "check", "uiClass": "checkBox"}, {"value": "Название", "caption": "label", "uiClass": "label"}, {"caption": "кнопка", "uiClass": "button"}, {"caption": "combo", "uiClass": "lookupField"}]}
         {"type": "jsonb", "components": [{"value": true, "caption": "check", "uiClass": "checkBox"}, {"value": "Название", "caption": "label", "uiClass": "label"}]}
         {"type": "jsonb", "components": [{"value": true, "caption": "check", "uiClass": "checkBox"}, {"value": "Hello! Hello! Hello! Hello! Hello!", "caption": "Text", "uiClass": "textField"}]}
-        {"type": "jsonb", "components": [{"value": "Country&d1600cf6-b7fb-44d5-abb4-3a3188f68fd7", "uiClass": "pickerField"}]}
+        {"type": "jsonb", "components": [{"value": "Country&d1600cf6-b7fb-44d5-abb4-3a3188f68fd7", "uiClass": "pickerField", "caption": "captionPickerField"}]}
+        {"type": "jsonb", "components": [{"value": "29.10.2020", "uiClass": "dateField", "caption": "captionDateField"}]}
     */
 
     @SuppressWarnings("unchecked")
@@ -86,13 +106,17 @@ public class JForm {
                 // value = jsonObject.get("value");
                 if (uiClass.equals("pickerField")) {
                     complexValue = (String) jsonObject.get("value");
+                } else if (uiClass.equals("dateField")) {
+                    ((DateField)component).setResolution(DateField.Resolution.DAY);
+                    complexValue = (String) jsonObject.get("value");
                 } else {
                     value = jsonObject.get("value");
                 }
+
             }
             // filling component
             if (component instanceof HasValue) {
-                if (!uiClass.equals("pickerField")) {
+                if (!uiClass.equals("pickerField") && !uiClass.equals("dateField")) {
                     ((HasValue) component).setValue(value);
                 } else if (uiClass.equals("pickerField")) {
                     //
@@ -112,6 +136,14 @@ public class JForm {
                     pickerField.addAction(clearAction);
                     for (String v : values)
                         log.info(v);
+                } else if (uiClass.equals("dateField")) {
+                    DateField dateField = (DateField) component;
+                    assert complexValue != null;
+                    String[] values = complexValue.split("\\.");
+                    ZoneId defaultZoneId = ZoneId.systemDefault();
+                    LocalDate localDate = LocalDate.of(Integer.parseInt(values[2]), Integer.parseInt(values[1]), Integer.parseInt(values[0]));
+                    Date date = Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+                    dateField.setValue(date);
                 }
             }
             String caption = null;
@@ -162,14 +194,24 @@ public class JForm {
 
                     log.info("stringClassSimpleName: " + stringClassSimpleName);
                     log.info("componentDTOName: " + componentDTOName);
-                    String id = ((Entity)((HasValue) component).getValue()).getId().toString();
-                    // Проверка Аргентина: fb45224d-af82-450b-8a85-35500e1d95d7
+                    String id = ((Entity) ((HasValue) component).getValue()).getId().toString();
+                    // Проверка Аргентина - id: fb45224d-af82-450b-8a85-35500e1d95d7;
                     log.info("id: " + id);
-                    String complexValue = stringClassSimpleName + "&" +  id;
-                    // componentDTO.setValue(
+                    String complexValue = stringClassSimpleName + "&" + id;
                     componentDTO.setValue(complexValue);
 
                     // componentDTO.setValue(((HasValue) component).getValue());
+                } else if (component instanceof DateField) {
+//                    Object objectValue = ((HasValue) component).getValue();
+//                    assert objectValue != null;
+//                    Class classObject = objectValue.getClass();
+                    Date date = (Date) ((HasValue) component).getValue();
+                    String pattern = "dd.MM.yyyy";
+                    DateFormat df = new SimpleDateFormat(pattern);
+                    String string = df.format(date);
+                    //  String string = ((Date) ((HasValue) component).getValue()).toString();
+                    componentDTO.setValue(string);
+
                 } else
                     componentDTO.setValue(((HasValue) component).getValue());
             }

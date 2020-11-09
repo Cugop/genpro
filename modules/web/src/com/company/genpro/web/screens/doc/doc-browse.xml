@@ -78,7 +78,7 @@
                     <button id="saveBtn" action="save"/>
                     <button id="cancelBtn" action="cancel"/>
                 </hbox>
-                <button id="button" caption="TEST" visible="true"/>
+<!--                <button id="button" caption="TEST" visible="true"/>-->
             </vbox>
         </split>
     </layout>
