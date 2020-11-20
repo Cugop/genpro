@@ -40,7 +40,7 @@
                 </filter>
                 <groupTable id="table"
                             width="100%"
-                            dataContainer="docsDc" >
+                            dataContainer="docsDc">
                     <actions>
                         <action id="create" type="create"/>
                         <action id="edit" type="edit"/>
@@ -67,6 +67,9 @@
                 </hbox>
             </vbox>
             <vbox id="editBox" height="100%" margin="false,false,false,true" expand="fieldGroupBox" spacing="true">
+
+                <form id="formForJForm" width="100%"/>
+
                 <scrollBox id="fieldGroupBox">
                     <form id="form" dataContainer="docDc" width="100%">
                         <column width="100%" childrenCaptionWidth="AUTO">
@@ -78,7 +81,7 @@
                     <button id="saveBtn" action="save"/>
                     <button id="cancelBtn" action="cancel"/>
                 </hbox>
-<!--                <button id="button" caption="TEST" visible="true"/>-->
+                <!--                <button id="button" caption="TEST" visible="true"/>-->
             </vbox>
         </split>
     </layout>

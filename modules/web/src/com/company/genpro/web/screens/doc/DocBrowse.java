@@ -48,6 +48,13 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
 
     private JForm jForm;
 
+
+    @Inject
+    private Form formForJForm;
+
+    private com.company.genpro.web.jform.JForm jForm2;
+
+
     @Subscribe("table")
     public void onTableSelection(Table.SelectionEvent<Doc> event) {
         String jsonBody = event.getSelected().iterator().next().getDocJ();
@@ -57,9 +64,14 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
 
     @Subscribe
     public void onAfterInit(AfterInitEvent event) {
+        jForm2 = new com.company.genpro.web.jform.JForm(formForJForm, uiComponents);
+        String jsonString = "{\"end_date\": {\"type\": \"8\", \"value\": \"13.11.2020\", \"name_ru\": \"Действителен до\", \"required\": \"1\"}, \"doc_number\": {\"type\": \"5\", \"value\": \"8888\", \"name_ru\": \"Номер ИНН\", \"required\": \"false\"}}";
+        jForm2.loadJson(jsonString);
+
         // jForm = new JForm(form, uiComponents, button, countryDc, countryDl);
         // jForm = new JForm(form, uiComponents, button);
         jForm = new JForm(form, uiComponents);
+
     }
 
     @Subscribe("saveBtn")
