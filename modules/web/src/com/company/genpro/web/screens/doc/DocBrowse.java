@@ -77,6 +77,10 @@ public class DocBrowse extends MasterDetailScreen<Doc> {
     @Subscribe("saveBtn")
     public void onSaveBtnClick(Button.ClickEvent event) {
         enableEditControls(true);
+        String jsonNew = jForm2.saveStates();
+
+        log.info("New json: " + jsonNew);
+
         String json = jForm.saveStates();
         Doc doc = docDc.getItem();
         // doc.setJsonBody(json);

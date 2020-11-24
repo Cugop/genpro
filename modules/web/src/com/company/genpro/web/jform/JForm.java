@@ -4,9 +4,11 @@ package com.company.genpro.web.jform;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.web.gui.components.WebAbstractField;
 import com.haulmont.cuba.web.gui.components.WebForm;
 import com.haulmont.cuba.web.gui.components.WebTabSheet;
 import com.haulmont.cuba.web.gui.components.WebTextArea;
+import com.vaadin.ui.AbstractField;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
@@ -82,6 +84,8 @@ public class JForm {
     /*
     {"end_date": {"type": "8", "value": "13.11.2020", "name_ru": "Действителен до", "required": "1"}, "doc_number": {"type": "5", "value": "8888", "name_ru": "Номер ИНН", "required": "false"}}
     * */
+
+    // New json: {"components":[{"caption":"Действителен до","uiClass":"dateField","value":"13.11.2020"},{"caption":"Номер ИНН","uiClass":"textField","value":"8888"}]}
 
     @SuppressWarnings("unchecked")
     public void loadJson(String jsonStr) {
@@ -168,11 +172,14 @@ public class JForm {
     private void createForm(JSONObject jsonObject) {
         Iterator<String> iterator = jsonObject.keys();
         while (iterator.hasNext()) {
-            createElement((JSONObject) jsonObject.get(iterator.next()));
+            String key = iterator.next();
+            createElement((JSONObject) jsonObject.get(key), key);
         }
     }
 
-    private void createElement(JSONObject jsonObject) {
+    // {"end_date": {"type": "8", "value": "13.11.2020", "name_ru": "Действителен до", "required": "1"}, "doc_number": {"type": "5", "value": "8888", "name_ru": "Номер ИНН", "required": "false"}}
+    // New json: {"components":[{"caption":"Действителен до","uiClass":"dateField","value":"13.11.2020"},{"caption":"Номер ИНН","uiClass":"textField","value":"8888"}]}
+    private void createElement(JSONObject jsonObject, String key) {
         String uiClass = null;
         String typeField = null;
         String caption = null;
@@ -203,8 +210,9 @@ public class JForm {
                     ((Component.HasCaption) component).setCaption(caption);
                 if (component instanceof Component.Editable)
                     ((Component.Editable) component).setEditable(true);
-                component.setId("add_" + uiClass + "5");
+                component.setId("add__" + uiClass + "__5__" + key);
                 form.add(component);
+                int a;
                 break;
 
             case "8":
@@ -222,13 +230,14 @@ public class JForm {
                     dateField.setValue(date);
                 }
                 dateField.setRequired(required);
+
                 if (jsonObject.has("name_ru"))
                     caption = (String) jsonObject.get("name_ru");
                 if (component instanceof Component.HasCaption)
                     ((Component.HasCaption) component).setCaption(caption);
                 if (component instanceof Component.Editable)
                     ((Component.Editable) component).setEditable(true);
-                component.setId("add_" + uiClass + "8");
+                component.setId("add__" + uiClass + "__8__" + key);
                 form.add(component);
                 break;
             case "0":
@@ -249,14 +258,48 @@ public class JForm {
 
     public String saveStates() {
         WebForm webForm = (WebForm) formTab1;
-        Collection<Component> components = webForm.getComponents(0);
+
+        Collection<Component> components = form.getComponents(0);
+
         String jsonString = createJSONObjectFromComponents(components).toString();
         log.info(jsonString);
         jsonText.setValue(jsonString);
         return jsonString;
     }
 
+    // {"end_date": {"type": "8", "value": "13.11.2020", "name_ru": "Действителен до", "required": "1"}, "doc_number": {"type": "5", "value": "8888", "name_ru": "Номер ИНН", "required": "false"}}
+    // New json: {"components":[{"caption":"Действителен до","uiClass":"dateField","value":"13.11.2020"},{"caption":"Номер ИНН","uiClass":"textField","value":"8888"}]}
     public static JSONObject createJSONObjectFromComponents(Collection<Component> components) {
+
+        JSONObject general = new JSONObject();
+
+        for (Component component : components) {
+            JSONObject jsonObject = new JSONObject();
+            String id = component.getId();
+            String[] idParameters = null;
+            if (id != null) {
+                idParameters = id.split("__");
+                jsonObject.put("type", idParameters[2]);
+                jsonObject.put("name_ru", ((Component.HasCaption) component).getCaption());
+                jsonObject.put("value", ((HasValue) component).getValue());
+                if (idParameters[2].equals("5")) {
+                    jsonObject.put("required", ((TextField) component).isRequired() ? "true" : "false");
+                } else if (idParameters[2].equals("8")) {
+                    jsonObject.put("required", ((DateField) component).isRequired() ? "true" : "false");
+                    Date date = (Date) ((HasValue) component).getValue();
+                    String pattern = "dd.MM.yyyy";
+                    DateFormat df = new SimpleDateFormat(pattern);
+                    String string = df.format(date);
+                    jsonObject.put("value", string);
+                }
+                general.put(idParameters[3], jsonObject);
+            } else {
+                general.put("error", jsonObject);
+            }
+        }
+        return general;
+
+/*
         JSONContainer componentsContainer = new JSONContainer();
         List<ComponentDTO> componentsList = new ArrayList<>();
         for (Component component : components) {
@@ -305,6 +348,7 @@ public class JForm {
         }
         componentsContainer.setComponents(componentsList);
         return new JSONObject(componentsContainer);
+*/
     }
 
     public static void jsonViewJsonText(TextArea<String> jsonText, JSONObject jsonObject) {
