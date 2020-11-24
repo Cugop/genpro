@@ -281,9 +281,9 @@ public class JForm {
                 idParameters = id.split("__");
                 jsonObject.put("type", idParameters[2]);
                 jsonObject.put("name_ru", ((Component.HasCaption) component).getCaption());
-                jsonObject.put("value", ((HasValue) component).getValue());
                 if (idParameters[2].equals("5")) {
                     jsonObject.put("required", ((TextField) component).isRequired() ? "true" : "false");
+                    jsonObject.put("value", ((HasValue) component).getValue());
                 } else if (idParameters[2].equals("8")) {
                     jsonObject.put("required", ((DateField) component).isRequired() ? "true" : "false");
                     Date date = (Date) ((HasValue) component).getValue();
